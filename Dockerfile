@@ -27,7 +27,10 @@ RUN	mkdir -p /root/.ssh/ && \
 	ssh-keyscan -t rsa bitbucket.org >> /root/.ssh/known_hosts
 
 # docker
-RUN curl -fsSL get.docker.com -o get-docker.sh
+ENV DOCKER_VERSION 17.09.0-ce
+
+RUN curl -fsSLO "https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz" && \
+	tar --strip-components=1 -xvzf "docker-$DOCKER_VERSION.tgz" -C /usr/local/bin
 
 # nodejs
 # gpg keys listed at https://github.com/nodejs/node
@@ -38,7 +41,8 @@ RUN set -ex && \
 	gpg --keyserver pool.sks-keyservers.net --recv-keys DD8F2338BAE7501E3DD5AC78C273792F7D83545D && \
 	gpg --keyserver pool.sks-keyservers.net --recv-keys C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 && \
 	gpg --keyserver pool.sks-keyservers.net --recv-keys B9AE9905FFD7803F25714661B63B535A4C206CA9 && \
-	gpg --keyserver pool.sks-keyservers.net --recv-keys 56730D5401028683275BD23C23EFEFE93C4CFFFE
+	gpg --keyserver pool.sks-keyservers.net --recv-keys 56730D5401028683275BD23C23EFEFE93C4CFFFE && \
+	gpg --keyserver pool.sks-keyservers.net --recv-keys 77984A986EBC2AA786BC0F66B01FBB92821C587A
 
 ENV NODE_VERSION 8.8.1
 
@@ -52,4 +56,3 @@ RUN curl -o "node-v$NODE_VERSION-linux-x64.tar.gz" -SL "https://nodejs.org/dist/
 RUN npm install -g eslint eslint-plugin-react istanbul@next mocha apidoc
 
 VOLUME "/data/teamcity_agent/conf"
-VOLUME "/var/run/docker.sock"
